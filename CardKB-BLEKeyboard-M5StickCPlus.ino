@@ -63,6 +63,14 @@ void loop() {
                         bleKeyboard.write(KEY_DOWN_ARROW);
                         Serial.println("Sending Down Arrow Key");  // Debugging
                         break;
+                    case 0xB4:  // Hexadecimal code for Left Arrow
+                        bleKeyboard.write(KEY_LEFT_ARROW);
+                        Serial.println("Sending Left Arrow Key");  // Debugging
+                        break;
+                    case 0xB7:  // Hexadecimal code for Right Arrow
+                        bleKeyboard.write(KEY_RIGHT_ARROW);
+                        Serial.println("Sending Right Arrow Key");  // Debugging
+                        break;
                     default:
                         bleKeyboard.print(c);  // Send character as BLE Keyboard
                         Serial.print("Sending: ");  // Debugging
