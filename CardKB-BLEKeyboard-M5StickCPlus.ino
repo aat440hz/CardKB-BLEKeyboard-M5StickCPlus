@@ -5,6 +5,7 @@
 #define CARDKB_ADDR 0x5F
 
 BleKeyboard bleKeyboard;
+bool isConnected = false; // Global variable to track connection status
 
 void setup() {
     Serial.begin(115200);
@@ -21,10 +22,19 @@ void setup() {
 }
 
 void loop() {
-    // Update the display with BLE connection status
+    // Check and update the connection status
+    if (bleKeyboard.isConnected() && !isConnected) {
+        isConnected = true;
+        Serial.println("BLE Connected!");
+    } else if (!bleKeyboard.isConnected() && isConnected) {
+        isConnected = false;
+        Serial.println("BLE Disconnected!");
+    }
+
+    // Update the display with the accurate BLE connection status
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setCursor(1, 10);
-    if (bleKeyboard.isConnected()) {
+    if (isConnected) {
         M5.Lcd.println("BLE Connected!");
         Wire.requestFrom(CARDKB_ADDR, 1);
         while (Wire.available()) {
@@ -42,7 +52,6 @@ void loop() {
         }
     } else {
         M5.Lcd.println("BLE Disconnected!");
-        Serial.println("BLE Keyboard not connected!");
     }
     delay(200); // Debounce delay
 }
