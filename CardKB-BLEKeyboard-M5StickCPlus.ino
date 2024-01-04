@@ -5,8 +5,8 @@
 #define CARDKB_ADDR 0x5F
 
 BleKeyboard bleKeyboard;
-bool isConnected = false;  // Global variable to track connection status
-bool wasConnected = false; // Variable to remember the last connection status
+bool isConnected = false;  // Current connection status
+bool wasConnected = false; // Last known connection status
 
 void setup() {
     Serial.begin(115200);
@@ -46,7 +46,10 @@ void loop() {
         while (Wire.available()) {
             char c = Wire.read();  // receive a byte as character
             if (c != 0) {
-                if (c == '\r') {  // If Enter key (or the correct character for your CARDKB)
+                if (c == 27) {  // ASCII for ESC is 27
+                    bleKeyboard.write(KEY_ESC);  // Send ESC keypress via BLE Keyboard
+                    Serial.println("Sending ESC Key");  // Debugging
+                } else if (c == '\r') {  // If Enter key (or the correct character for your CARDKB)
                     bleKeyboard.write(KEY_RETURN);  // Send Enter keypress via BLE Keyboard
                     Serial.println("Sending Enter Key");  // Debugging
                 } else {
@@ -57,5 +60,5 @@ void loop() {
             }
         }
     }
-    delay(200);  // Debounce delay
+    delay(200); // Debounce delay
 }
