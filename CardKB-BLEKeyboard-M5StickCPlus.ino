@@ -5,13 +5,14 @@
 #define CARDKB_ADDR 0x5F
 
 BleKeyboard bleKeyboard;
-bool isConnected = false; // Global variable to track connection status
+bool isConnected = false;  // Global variable to track connection status
+bool wasConnected = false; // Variable to remember the last connection status
 
 void setup() {
     Serial.begin(115200);
     M5.begin();
     Wire.begin(32, 33); // SDA, SCL pins as in your example
-    M5.Lcd.setRotation(3);
+    M5.Lcd.setRotation(1);
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setCursor(1, 10);
     M5.Lcd.setTextColor(YELLOW);
@@ -22,20 +23,25 @@ void setup() {
 }
 
 void loop() {
-    // Check and update the connection status
-    if (bleKeyboard.isConnected() && !isConnected) {
-        isConnected = true;
-        Serial.println("BLE Connected!");
-    } else if (!bleKeyboard.isConnected() && isConnected) {
-        isConnected = false;
-        Serial.println("BLE Disconnected!");
+    // Check the current connection status
+    isConnected = bleKeyboard.isConnected();
+
+    // Update the display only when connection status changes
+    if (isConnected != wasConnected) {
+        M5.Lcd.fillScreen(BLACK);
+        M5.Lcd.setCursor(1, 10);
+        if (isConnected) {
+            M5.Lcd.println("BLE Connected!");
+            Serial.println("BLE Connected!");
+        } else {
+            M5.Lcd.println("BLE Disconnected!");
+            Serial.println("BLE Disconnected!");
+        }
+        wasConnected = isConnected;  // Update the remembered status
     }
 
-    // Update the display with the accurate BLE connection status
-    M5.Lcd.fillScreen(BLACK);
-    M5.Lcd.setCursor(1, 10);
+    // Handling of key presses when BLE is connected
     if (isConnected) {
-        M5.Lcd.println("BLE Connected!");
         Wire.requestFrom(CARDKB_ADDR, 1);
         while (Wire.available()) {
             char c = Wire.read();  // receive a byte as character
@@ -50,8 +56,6 @@ void loop() {
                 }
             }
         }
-    } else {
-        M5.Lcd.println("BLE Disconnected!");
     }
-    delay(200); // Debounce delay
+    delay(200);  // Debounce delay
 }
