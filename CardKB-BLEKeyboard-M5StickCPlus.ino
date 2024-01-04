@@ -46,16 +46,28 @@ void loop() {
         while (Wire.available()) {
             char c = Wire.read();  // receive a byte as character
             if (c != 0) {
-                if (c == 27) {  // ASCII for ESC is 27
-                    bleKeyboard.write(KEY_ESC);  // Send ESC keypress via BLE Keyboard
-                    Serial.println("Sending ESC Key");  // Debugging
-                } else if (c == '\r') {  // If Enter key (or the correct character for your CARDKB)
-                    bleKeyboard.write(KEY_RETURN);  // Send Enter keypress via BLE Keyboard
-                    Serial.println("Sending Enter Key");  // Debugging
-                } else {
-                    bleKeyboard.print(c);  // Send character as BLE Keyboard
-                    Serial.print("Sending: ");  // Debugging
-                    Serial.println(c, HEX);
+                switch (c) {
+                    case 27:  // ASCII for ESC is 27
+                        bleKeyboard.write(KEY_ESC);  // Send ESC keypress via BLE Keyboard
+                        Serial.println("Sending ESC Key");  // Debugging
+                        break;
+                    case '\r':  // If Enter key (or the correct character for your CARDKB)
+                        bleKeyboard.write(KEY_RETURN);  // Send Enter keypress via BLE Keyboard
+                        Serial.println("Sending Enter Key");  // Debugging
+                        break;
+                    case 0xB5:  // Hexadecimal code for Up Arrow
+                        bleKeyboard.write(KEY_UP_ARROW);
+                        Serial.println("Sending Up Arrow Key");  // Debugging
+                        break;
+                    case 0xB6:  // Hexadecimal code for Down Arrow
+                        bleKeyboard.write(KEY_DOWN_ARROW);
+                        Serial.println("Sending Down Arrow Key");  // Debugging
+                        break;
+                    default:
+                        bleKeyboard.print(c);  // Send character as BLE Keyboard
+                        Serial.print("Sending: ");  // Debugging
+                        Serial.println(c, HEX);
+                        break;
                 }
             }
         }
