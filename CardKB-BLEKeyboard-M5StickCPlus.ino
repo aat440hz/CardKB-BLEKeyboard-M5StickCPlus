@@ -12,7 +12,7 @@ void setup() {
     Serial.begin(115200);
     M5.begin();
     Wire.begin(32, 33); // SDA, SCL pins as in your example
-    M5.Lcd.setRotation(1);
+    M5.Lcd.setRotation(3);
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setCursor(1, 10);
     M5.Lcd.setTextColor(YELLOW);
